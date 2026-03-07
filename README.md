@@ -49,8 +49,4 @@ TI/
 
 ---
 
-## Contact
-- Name, affiliation
-- Email (optional)
-
 
