@@ -1,3 +1,9 @@
+# ------------------------------------
+# Run the script with:
+#     mpiexec -n 4 python3 cmds.py
+#
+# For additional details, see the Dedalus documentation.
+# ------------------------------------
 import numpy as np
 import dedalus.public as d3
 import logging
