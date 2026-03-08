@@ -1,6 +1,6 @@
 # 🌱 Transverse instabilities of vegetation fronts: Biotic and abiotic drivers — codes 
 
-This repository contains code used to generate the main numerical results in the manuscript:
+This repository contains the minimal codes used to generate the main numerical results in the manuscript:
 
 > **Transverse instabilities of vegetation fronts: Biotic and abiotic drivers**  
 > (authors, journal status, year)
