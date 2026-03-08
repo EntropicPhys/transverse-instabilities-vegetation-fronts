@@ -32,7 +32,6 @@ TI/
 │   ├── compute_lam_eta.m  # Compute the spectrum slope 
 │   └── cmds.m             # co-frame continuation and stability curve
 ├── DNS/
-│   ├── README             # Dedalus simulations run commands
 │   └── cmds.m             # two-dimensional simulation with Dedalus
 
 ```
