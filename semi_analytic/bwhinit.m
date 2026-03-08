@@ -1,0 +1,20 @@
+function p=bwhinit(p,lx,nx,par,dir)
+p=stanparam(p);p=setfn(p,dir);p.nc.neq=3;p.sw.sfem=-1;
+p.fuha.sG=@sG;p.fuha.sGjac=@sGjac;p.fuha.outfu=@hobra;
+pde=stanpdeo1D(lx,2*lx/nx);p.pdeo=pde;p.vol=2*lx;
+p.np=p.pdeo.grid.nPoints;p.nu=p.nc.neq*p.np;p.sol.xi=1/p.nu;
+p=setfemops(p);p.nc.ilam=1;p.sw.verb=2;p.plot.pcmp=1;
+p.plot.bpcmp=2;
+pp=par(1);nw=par(2);nh=par(3);et=par(4);Rw=par(5);
+Rh=par(6);ga=par(7);a=par(8);q=par(9);ff=par(10);
+bp=0.76;I=a*(bp+q*ff)/(bp+q);Lh=nh/(1+Rh*bp);Lw=nw/(1+Rw*bp);
+Gw=ga*bp*(1+et*bp)^2;hp=pp/(I+Lh);wp=(I*hp/(Lw+Gw));
+wm=a*ff*pp/(nh*nw+a*ff*nw);hm=pp/(a*ff+nh);
+x=getpte(p);x=x';
+b=bp*0.5*(1-tanh(x));
+w=wp+(wm-wp)*0.5*(1+tanh(x));
+h=hp+(hm-hp)*0.5*(1+tanh(x));
+p.u=[b;w;h;par];
+p.plot.cl={'black','blue','red'};
+plotsol(p)
+end
