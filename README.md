@@ -26,11 +26,11 @@ TI/
 │   ├── sGjac.m            # Jacobian for single species
 │   ├── oosetfemops.m      # FEM matrix setup 
 │   ├── bwhinit.m          # Model initialization
-│   ├── L.m                # numerical linear operator
-│   ├── Lap.m              # numerical adjoint linear operator
-│   ├── tint.m             # Direct numerical simulation based on semi-implicit integration,
-│   ├── cmds1.m            # co-frame continuation
-│   └── cmds2.m            # stability curve
+│   ├── tintfreeze.m       # Direct numerical simulation based on semi-implicit integration,
+│   ├── LAp.m              # numerical linear operator
+│   ├── LOp.m              # numerical adjoint linear operator
+│   ├── compute_lam_eta.m  # Compute the spectrum slope 
+│   └── cmds.m             # co-frame continuation and stability curve
 ├── DNS/
 │   ├── README             # Dedalus simulations run commands
 │   └── cmds.m             # two-dimensional simulation with Dedalus
