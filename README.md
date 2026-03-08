@@ -19,6 +19,7 @@ TI/
 │   ├── sGjac.m            # Analytical Jacobian
 │   ├── bwhinit.m          # Model initialization 
 │   ├── oosetfemops.m      # FEM matrix setup
+│   ├── sgbra.m            # continuation output
 │   └── cmds.m             # bifurcation diagram
 ├── semi-analytic TI/
 │   ├── sG.m               # RHS for single species
