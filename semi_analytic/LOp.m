@@ -9,19 +9,13 @@ Lh=nh*ov./(1+Rh*b); dLh=-nh*Rh*ov./(1+Rh*b).^2;
 Gw=ga*b.*(1+et*b).^2; dGw = ga*(1+et*b).*(1+3*et*b);
 
 f1b = -1*ov + w.*(1 + 3*et*(-2+et).*b.^2 - 4*(et^2)*b.^3 + (4*et-2)*b);
-f1w = (1-b).*b.*(1+et*b).^2;
-f1h = 0*ov;
-f2b = dI.*h - dLw.*w - dGw.*w;
-f2w = -Gw - Lw;
-f2h = I;
-f3b = -(dLh+dI).*h;
-f3w = 0*ov;
-f3h = -I-Lh;
+f1w = (1-b).*b.*(1+et*b).^2; f1h = 0*ov;
+f2b = dI.*h - dLw.*w - dGw.*w; f2w = -Gw - Lw; f2h = I;
+f3b = -(dLh+dI).*h; f3w = 0*ov; f3h = -I-Lh;
 
 Fu = [[spdiags(f1b,0,n,n), spdiags(f1w,0,n,n), spdiags(f1h,0,n,n)];
       [spdiags(f2b,0,n,n), spdiags(f2w,0,n,n), spdiags(f2h,0,n,n)];
       [spdiags(f3b,0,n,n), spdiags(f3w,0,n,n), spdiags(f3h,0,n,n)]];
-
 
 Lu = [[spdiags(ov,0,n,n), spdiags(0*ov,0,n,n), spdiags(0*ov,0,n,n)];
       [spdiags(0*ov,0,n,n), spdiags(dw*ov,0,n,n), spdiags(0*ov,0,n,n)];
@@ -31,6 +25,5 @@ Lu = [[spdiags(ov,0,n,n), spdiags(0*ov,0,n,n), spdiags(0*ov,0,n,n)];
 K=p.mat.K; Kx=p.mat.Kx; M=p.mat.M;
 bK=kron([[1,0,0];[0,dw,0];[0,0,dh]],K);             
 sKx=kron([[s,0,0];[0,s,0];[0,0,s]],Kx);    
-% Q = kron([[1,0,0];[0,1,0];[0,0,1]],p.mat.Q);
 r=bK-sKx - M*Fu + (l^2)*M*Lu;
 end
