@@ -52,43 +52,6 @@ bwh_FI_f_<f>_eta_<eta>_var_2
 
 with decimal points replaced by `p`.
 
-## Modifying parameters
-
-The main numerical and model parameters are defined directly in `cmds.py`.
-
-Important numerical parameters include:
-
-```python
-Lx, Ly
-Nx, Ny
-stop_sim_time
-timestep
-timestepper
-```
-
-Important model parameters include:
-
-```python
-PP
-Lam
-Nw
-Nh
-Rw
-Rh
-Ga
-A
-Q
-K
-M
-Db
-Dw
-Dh
-EE
-f
-```
-
-To run a different simulation, edit the parameter values in `cmds.py` before launching the script.
-
 ## Notes
 
 This script is intended as a minimal reproduction script for the direct numerical simulations. The default resolution may be computationally expensive, so it is recommended to test the script first with a reduced resolution or shorter final time before running full simulations on a workstation or computing cluster.
