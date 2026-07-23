@@ -63,7 +63,7 @@ b00=0.65; w00=0.645
 h00=pp/(a*(b00+q*f)/(b00+q)+nw/(1+Rw*b00))
 b0, w0, h0 = fsolve(hss, [b00, w00, h00])
 
-dealias = 1.1
+dealias = 1.5
 stop_sim_time = 1e1
 timestepper = d3.RK443
 timestep = 1.3e-1
@@ -81,6 +81,7 @@ ybasis = d3.ChebyshevT(coords['y'], size=Ny, bounds=(0, Ly), dealias=dealias)
 # Helper: integrate over the whole domain
 integ = lambda A: d3.Integrate(A, ('x','y'))
 Area  = Lx * Ly
+
 # ----------------------------
 # Fields
 # ----------------------------
@@ -125,32 +126,15 @@ in1 = (
 )
 in2 = by**2 + wy**2 + hy**2
 
-# # x-derivative
-bx = ex @ grad_b
-bx_rms = integ(bx*bx)
-b_total = integ(b)/(Lx*Ly)
-
+# Speed expression (scalar, from integrals)
+v_expr = -integ(in1)/integ(in2)
+# Linear and non-linear RHS
 L_b = -b+bLap
 N_b = w*b*(1-b)*(1+et*b)**2+v*by
 L_w = wLap
 N_w = h*a*(b+q*f)/(b+q) - nw*w/(1+Rw*b) - ga*w*b*(1+et*b)**2 + v*wy
 L_h = hLap
 N_h = -h*a*(b+q*f)/(b+q) - nh*h/(1+Rh*b) + v*hy
-
-# ----------------------------
-# Stationarity proxy: RHS norms (time-derivative residuals)
-# ----------------------------
-dbdt = -b + bLap + w*b*(1-b)*(1+et*b)**2 + v*by
-dwdt =  dw*wLap + h*a*(b+q*f)/(b+q) - nw*w/(1+Rw*b) - ga*w*b*(1+et*b)**2 + v*wy
-dhdt =  p + dh*hLap - h*a*(b+q*f)/(b+q) - nh*h/(1+Rh*b) + v*hy
-
-R2 = integ(dbdt*dbdt + dwdt*dwdt + dhdt*dhdt) / Area
-R  = R2**0.5
-
-# Initialize v consistently (compute scalar from expression)
-v0 = eval_global_scalar(v_expr)
-if v['g'].size:
-    v['g'][...] = v0
 
 # ----------------------------
 # Problem
@@ -173,6 +157,42 @@ problem.add_equation("ey@grad_w(y=0)  = 0")
 problem.add_equation("ey@grad_w(y=Ly) = 0")
 problem.add_equation("ey@grad_h(y=0)  = 0")
 problem.add_equation("ey@grad_h(y=Ly) = 0")
+
+
+# -----------------------------
+# Initial conditions
+# -----------------------------
+k=2*np.pi/Lx
+l=1
+amp=-1e-2
+p['g']=pp
+arg = 0.5*Ly*(1+amp*np.cos(l*k*x))-y
+top = 0.5*(1+np.tanh(arg))
+bot = 1- top
+w_top = pp*a*f/(nw*a*f + nh*nw)
+h_top = pp/(a*f + nh)
+b['g'] = b0*top
+w['g'] = w0 + (w_top - w0)*bot
+h['g'] = h0 + (h_top - h0)*bot
+# ----------------------------
+# Stationarity proxy: RHS norms (time-derivative residuals)
+# ----------------------------
+dbdt = -b + bLap + w*b*(1-b)*(1+et*b)**2 + v*by
+dwdt =  dw*wLap + h*a*(b+q*f)/(b+q) - nw*w/(1+Rw*b) - ga*w*b*(1+et*b)**2 + v*wy
+dhdt =  p + dh*hLap - h*a*(b+q*f)/(b+q) - nh*h/(1+Rh*b) + v*hy
+
+R2 = integ(dbdt*dbdt + dwdt*dwdt + dhdt*dhdt) / Area
+R  = R2**0.5
+
+# # x-derivative
+bx = ex @ grad_b
+bx_rms = integ(bx*bx)
+b_total = integ(b)/(Lx*Ly)
+
+# Initialize v consistently (compute scalar from expression)
+v0 = eval_global_scalar(v_expr)
+if v['g'].size:
+    v['g'][...] = v0
 
 # ----------------------------
 # Solver
@@ -211,13 +231,19 @@ try:
 
         v_now = eval_global_scalar(v)
         u['g'] = v_now
-        dt = CFL.compute_timestep()
+        dt = timestep
         solver.step(dt)
 
         if (solver.iteration - 1) % X_iter == 0:
             # Compute residuals
             R_now    = eval_global_scalar(R)
             bx_rms_now = eval_global_scalar(bx_rms)
+            L_b_f = L_b.evaluate()
+            N_b_f = N_b.evaluate()
+            L_w_f = L_w.evaluate()
+            N_w_f = N_w.evaluate()
+            L_h_f = L_h.evaluate()
+            N_h_f = N_h.evaluate()
             L_b_tail = tail_fraction(L_b_f,scales=(1.0,2/3))
             N_b_tail = tail_fraction(N_b_f,scales=(1.0,2/3))
             L_w_tail = tail_fraction(L_w_f,scales=(1.0,2/3))
@@ -227,7 +253,7 @@ try:
 
             if rank == 0:
                 logger.info(f"Iter={solver.iteration}, t={solver.sim_time:.3e}, dt={dt:.3e},"
-                            f"R={R_now:.3e}, CFL={Ly/abs(Ny*v_now):.3e}, v={v_now:.3e}, bx_rms={bx_rms_now:.3e}") # 
+                            f"R={R_now:.3e}, v={v_now:.3e}, bx_rms={bx_rms_now:.3e}") # 
                 logger.info(f"tails:"
                             f"L_b[y]={L_b_tail:.2e}, N_b[y]={N_b_tail:.2e} |"
                             f"L_w[y]={L_w_tail:.2e}, N_w[y]={N_w_tail:.2e} |"
