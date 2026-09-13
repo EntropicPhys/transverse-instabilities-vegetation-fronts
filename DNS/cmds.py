@@ -174,8 +174,9 @@ h_top = pp/(a*f + nh)
 b['g'] = b0*top
 w['g'] = w0 + (w_top - w0)*bot
 h['g'] = h0 + (h_top - h0)*bot
+
 # ----------------------------
-# Stationarity proxy: RHS norms (time-derivative residuals)
+# L2-norm Residual 
 # ----------------------------
 dbdt = -b + bLap + w*b*(1-b)*(1+et*b)**2 + v*by
 dwdt =  dw*wLap + h*a*(b+q*f)/(b+q) - nw*w/(1+Rw*b) - ga*w*b*(1+et*b)**2 + v*wy
@@ -198,7 +199,7 @@ if v['g'].size:
 # Solver
 # ----------------------------
 solver = problem.build_solver(timestepper)
-
+solver.stop_sim_time = stop_sim_time
 # ----------------------------
 # Stationarity criteria (RESIDUAL-based)  <<<< CHANGED
 # ----------------------------
