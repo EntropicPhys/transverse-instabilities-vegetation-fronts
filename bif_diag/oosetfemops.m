@@ -1,3 +1,3 @@
-function p=oosetfemops(p)
+function p=oosetfemops(p) %calculation of FEM-matrices
 [K,M,~]=p.pdeo.fem.assema(p.pdeo.grid,1,1,1);
-p.mat.K=K; p.mat.M=kron([[1,0,0];[0,1,0];[0,0,1]],M);
+p.mat.K=K; p.mat.M=kron([[1,0,0];[0,1,0];[0,0,1]],M); % locating stiff and mass matrices respectively
