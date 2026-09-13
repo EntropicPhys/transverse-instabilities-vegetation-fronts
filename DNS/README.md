@@ -52,6 +52,14 @@ bwh_FI_f_<f>_eta_<eta>_var_2
 
 with decimal points replaced by `p`.
 
+To plot simulation results, run:
+
+```bash
+mpiexec -n nprocs python3 plot_snapshots.py folder-results/*.h5
+```
+The results are saved at a created folder named "frames".
+
+
 ## Notes
 
 This script is intended as a minimal reproduction script for the direct numerical simulations. The default resolution may be computationally expensive, so it is recommended to test the script first with a reduced resolution or shorter final time before running full simulations on a workstation or computing cluster.
